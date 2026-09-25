@@ -3,9 +3,9 @@
 #include <furi.h>
 #include <furi_hal.h>
 
-#define TPMS_VERSION_APP "4.5"
+#define TPMS_VERSION_APP "4.5.1"
 #define TPMS_DEVELOPED "ProtoView core + altruista86 UI"
-#define TPMS_GITHUB "https://github.com/beewosk/flipperzero-tpms"
+#define TPMS_GITHUB "https://github.com/teiksef/TPMS-Editor-TxF"
 
 /* LF wake profiles. TPMS 3.8 keeps Relearn inside the normal RX18 scanner.
    CW Relearn can use 125.0 or 134.2 kHz. EL-50448 stays at 125 kHz CW,
