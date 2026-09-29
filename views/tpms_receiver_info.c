@@ -1,6 +1,6 @@
 #include "tpms_receiver.h"
 #include "../tpms_app_i.h"
-#include <tpms_test_rx14_icons.h>
+#include <tpmse_icons.h>
 #include "../protocols/tpms_generic.h"
 #include <input/input.h>
 #include <gui/elements.h>

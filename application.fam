@@ -1,5 +1,5 @@
 App(
-    appid="tpms_test_rx14",
+    appid="tpmse",
     name="TPMS",
     apptype=FlipperAppType.EXTERNAL,
     targets=["f7"],
