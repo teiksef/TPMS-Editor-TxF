@@ -3,8 +3,8 @@
 #include <furi.h>
 #include <furi_hal.h>
 
-#define TPMS_VERSION_APP "4.5.1"
-#define TPMS_DEVELOPED "ProtoView core + altruista86 UI"
+#define TPMS_VERSION_APP "4.5.2beta5"
+#define TPMS_DEVELOPED "ProtoView core + altruista86 UI + TxF bits"
 #define TPMS_GITHUB "https://github.com/teiksef/TPMS-Editor-TxF"
 
 /* LF wake profiles. TPMS 3.8 keeps Relearn inside the normal RX18 scanner.

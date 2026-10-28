@@ -683,10 +683,21 @@ void tpms_scene_editor_on_enter(void* context) {
     const char* diagnostic_label = "Flags";
     if(editor_state.values.kind == TpmsEncoderFord) diagnostic_label = "TT / FF";
     if(editor_state.values.kind == TpmsEncoderCitroen) diagnostic_label = "State / scale";
+    if(editor_state.values.kind == TpmsEncoderNissan) diagnostic_label = "Mode";
     editor_state.flags_item = variable_item_list_add(
         app->variable_item_list, diagnostic_label, 1U, NULL, app);
-    if(editor_state.values.kind == TpmsEncoderSchraderEG53MA4 ||
-       tpms_encoder_flags_editable(editor_state.values.kind)) {
+    if(tpms_encoder_flags_editable(editor_state.values.kind)) {
+        // for editable flags show all eight characters... unless it makes no real sense
+        if(editor_state.values.kind == TpmsEncoderNissan) {
+            snprintf(text, sizeof(text), "%u%u%u",
+               (unsigned)(editor_state.values.flags>>2)&1U,
+               (unsigned)(editor_state.values.flags>>1)&1U,
+               (unsigned)(editor_state.values.flags)&1U);
+        } else {
+                snprintf(text, sizeof(text), "0x%08lX", (unsigned long)editor_state.values.flags);
+        }
+    // non-editable
+    } else if (editor_state.values.kind == TpmsEncoderSchraderEG53MA4) {
         snprintf(text, sizeof(text), "0x%08lX", (unsigned long)editor_state.values.flags);
     } else if(editor_state.values.kind == TpmsEncoderFord &&
               editor_state.values.raw_payload_valid &&
@@ -708,6 +719,11 @@ void tpms_scene_editor_on_enter(void* context) {
             "%02X  x%u",
             editor_state.values.raw_payload[0],
             editor_state.values.raw_payload[0] == 0xDCU ? 2U : 1U);
+    } else if(editor_state.values.kind == TpmsEncoderNissan) {
+        snprintf(text, sizeof(text), "%u%u%u",
+           (unsigned)(editor_state.values.flags>>2)&1U,
+           (unsigned)(editor_state.values.flags>>1)&1U,
+           (unsigned)(editor_state.values.flags)&1U);
     } else {
         snprintf(text, sizeof(text), "0x%02X", (unsigned)(editor_state.values.flags & 0xFFU));
     }

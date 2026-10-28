@@ -25,6 +25,26 @@ static inline void tpms_add_manchester(
     }
 }
 
+// this function is to add a numer of bits not rounded up to bytes
+// it still needs byte size of the buffer, as it uses bitmap_get() expecting this
+static inline void tpms_add_manchester_bits(
+    RawSamplesBuffer* samples,
+    const uint8_t* data,
+    size_t bytes,
+    size_t bits,
+    uint32_t te) {
+    if(bits > bytes*8U) return;	// safeguard for not running farther than the buffer
+    for(size_t bit = 0; bit < bits; bit++) {
+        if(bitmap_get((uint8_t*)data, bytes, bit)) {
+            raw_samples_add_or_update(samples, true, te);
+            raw_samples_add_or_update(samples, false, te);
+        } else {
+            raw_samples_add_or_update(samples, false, te);
+            raw_samples_add_or_update(samples, true, te);
+        }
+    }
+}
+
 static inline void tpms_add_diff_manchester(
     RawSamplesBuffer* samples,
     const uint8_t* data,

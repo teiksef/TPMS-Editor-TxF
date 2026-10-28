@@ -53,6 +53,7 @@ typedef enum {
     TpmsEncoderTG1C,
     TpmsEncoderQ85,
     TpmsEncoderMercedesSprinter,
+    TpmsEncoderNissan,
     TpmsEncoderCount,
 } TpmsEncoderKind;
 

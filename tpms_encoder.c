@@ -24,6 +24,7 @@ static const TpmsEncoderKind test_kinds[] = {
     TpmsEncoderTG1C,
     TpmsEncoderQ85,
     TpmsEncoderMercedesSprinter,
+    TpmsEncoderNissan,
 };
 
 static ProtoViewDecoder* decoder_for_kind(TpmsEncoderKind kind) {
@@ -134,6 +135,7 @@ const char* tpms_encoder_name(TpmsEncoderKind kind) {
     case TpmsEncoderTG1C: return "VDO TG1C/Abarth TEST";
     case TpmsEncoderQ85: return "Shenzhen Q85 TEST";
     case TpmsEncoderMercedesSprinter: return "Mercedes Sprinter TEST";
+    case TpmsEncoderNissan: return "Nissan PMV-C811 TEST";
     default: return "None";
     }
 }
@@ -147,6 +149,7 @@ const char* tpms_protocol_display_name(const char* internal_name) {
     if(strcmp(internal_name, "Citroen TPMS") == 0) return "VDO/PSA/FCA";
     if(strcmp(internal_name, "Ford TPMS") == 0) return "Ford";
     if(strcmp(internal_name, "Toyota PMV-107J TEST") == 0) return "Pacific PMV-107J TEST";
+    if(strcmp(internal_name, "Nissan PMV-C811 TEST") == 0) return "Pacific PMV-C811/Nissan";
     return internal_name;
 }
 
@@ -155,6 +158,7 @@ const char* tpms_protocol_list_name(const char* internal_name) {
     /* TPMS 4.0: keep the live RX row short enough to leave room for the full ID.
        The detailed screen still uses tpms_protocol_display_name(). */
     if(strcmp(internal_name, "Toyota TPMS") == 0) return "Pacific C210";
+    if(strcmp(internal_name, "Nissan PMV-C811 TEST") == 0) return "Nissan PMV";
     return tpms_protocol_display_name(internal_name);
 }
 
@@ -208,6 +212,7 @@ TpmsEncoderKind tpms_encoder_for_model(const char* model) {
 }
 
 bool tpms_encoder_build(const TpmsEditValues* values, TpmsTxWave* wave) {
+
     if(!values || !wave || values->kind == TpmsEncoderNone) return false;
     memset(wave, 0, sizeof(*wave));
 
@@ -272,7 +277,7 @@ void tpms_encoder_default_values(TpmsEncoderKind kind, TpmsEditValues* values) {
     memset(values, 0, sizeof(*values));
     values->kind = kind;
     values->id = 0x12345678U;
-    if(kind == TpmsEncoderRenault || kind == TpmsEncoderSchraderEG53MA4) {
+    if(kind == TpmsEncoderRenault || kind == TpmsEncoderSchraderEG53MA4 || kind == TpmsEncoderNissan) {
         values->id = 0x00123456U;
     }
     values->pressure_kpa = 220.0f;
@@ -306,7 +311,7 @@ void tpms_encoder_default_values(TpmsEncoderKind kind, TpmsEditValues* values) {
 }
 
 bool tpms_encoder_has_temperature(TpmsEncoderKind kind) {
-    return kind > TpmsEncoderNone && kind < TpmsEncoderCount;
+    return kind > TpmsEncoderNone && kind < TpmsEncoderCount && kind != TpmsEncoderNissan;
 }
 
 bool tpms_encoder_flags_editable(TpmsEncoderKind kind) {
@@ -316,7 +321,8 @@ bool tpms_encoder_flags_editable(TpmsEncoderKind kind) {
      * have independently documented status/state bytes and rebuild integrity. */
     return kind == TpmsEncoderRenault || kind == TpmsEncoderSchrader ||
            kind == TpmsEncoderPMV107J || kind == TpmsEncoderTG1C ||
-           kind == TpmsEncoderQ85 || kind == TpmsEncoderMercedesSprinter;
+           kind == TpmsEncoderQ85 || kind == TpmsEncoderMercedesSprinter ||
+           kind == TpmsEncoderNissan;
 }
 
 bool tpms_encoder_is_experimental(TpmsEncoderKind kind) {
@@ -349,6 +355,7 @@ float tpms_encoder_pressure_step_kpa(TpmsEncoderKind kind) {
     case TpmsEncoderTG1C: return 1.38f;
     case TpmsEncoderQ85: return 3.0f;
     case TpmsEncoderMercedesSprinter: return psi_to_kpa / 2.75f;
+    case TpmsEncoderNissan: return 0.75f;				// as in Renault...
     default: return 5.0f;
     }
 }
