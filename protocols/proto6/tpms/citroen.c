@@ -52,8 +52,9 @@ static bool decode(uint8_t *bits, uint32_t numbytes, uint32_t numbits, ProtoView
     /* Tester captures with state 0xDC (Continental/VDO/FCA family) are
        consistently exactly x2 versus the classic PSA 1.364 kPa/count scale.
        Keep classic frames unchanged and apply the observed x2 variant only
-       when the state byte identifies that family. */
-    const float pressure_step = raw[0] == 0xDCU ? 2.728f : 1.364f;
+       when the state byte identifies that family. 
+       Later added 0xDD based on data catched on the street */
+    const float pressure_step = (raw[0] == 0xDCU || raw[0] == 0xDDU) ? 2.728f : 1.364f;
     float kpa = (float)raw[6] * pressure_step;
     int temp = raw[7]-50;
     int battery = raw[8]; /* This may be the battery. It's not clear. */
@@ -64,7 +65,7 @@ static bool decode(uint8_t *bits, uint32_t numbytes, uint32_t numbits, ProtoView
     fieldset_add_uint(info->fieldset,"Repeat",repeat,4);
     fieldset_add_uint(info->fieldset,"Battery",battery,8);
     fieldset_add_hex(info->fieldset,"State",raw[0],8);
-    fieldset_add_uint(info->fieldset,"Pressure scale",raw[0] == 0xDCU ? 2U : 1U,2);
+    fieldset_add_uint(info->fieldset,"Pressure scale",(raw[0] == 0xDCU || raw[0] == 0xDDU) ? 2U : 1U,2);
     fieldset_add_bytes(info->fieldset, "Raw payload", raw, 10U * 2U);
     fieldset_add_uint(info->fieldset, "Raw payload bits", 80U, 8U);
     return true;
@@ -103,7 +104,7 @@ static void build_message(RawSamplesBuffer* samples, ProtoViewFieldSet* fieldset
             (uint8_t)tpms_clamp_u32((uint32_t)battery->uvalue, 255U);
     }
     if(tpms_build_should_patch(fieldset, have_raw, TPMS_EDIT_PRESSURE)) {
-        const float pressure_step = have_raw && data[0] == 0xDCU ? 2.728f : 1.364f;
+        const float pressure_step = have_raw && (data[0] == 0xDCU || data[0] == 0xDDU) ? 2.728f : 1.364f;
         data[6] = (uint8_t)tpms_clamp_i32(
             (int32_t)(pressure->fvalue / pressure_step + 0.5f), 0, 255);
     }
