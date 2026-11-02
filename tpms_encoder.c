@@ -144,7 +144,7 @@ const char* tpms_protocol_display_name(const char* internal_name) {
     if(strcmp(internal_name, "Toyota TPMS") == 0) return "Pacific C210/Toyota";
     if(strcmp(internal_name, "Schrader TPMS") == 0) return "Schrader";
     if(strcmp(internal_name, "Schrader EG53MA4 TPMS") == 0) return "Schrader EG53MA4";
-    if(strcmp(internal_name, "Citroen TPMS") == 0) return "VDO/PSA/FCA";
+    if(strcmp(internal_name, "Citroen TPMS") == 0) return "VDO PSA/FCA";
     if(strcmp(internal_name, "Ford TPMS") == 0) return "Ford";
     if(strcmp(internal_name, "Toyota PMV-107J TEST") == 0) return "Pacific PMV-107J TEST";
     return internal_name;
