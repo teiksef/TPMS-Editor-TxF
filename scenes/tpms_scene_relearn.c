@@ -239,7 +239,7 @@ void tpms_scene_relearn_config_on_enter(void* context) {
     variable_item_set_current_value_text(
         item, tpms_relearn_mod_text[app->relearn_modulation_index]);
 
-    tpms_relearn_add_fixed(app, "Decoders", "18 AUTO");
+    tpms_relearn_add_fixed(app, "Decoders", "AUTO All");
     tpms_relearn_add_fixed(app, "Controls", "> / OK = REPEAT");
     tpms_relearn_add_fixed(app, "AUTO", "LF -> RX -> LF...");
     tpms_relearn_add_fixed(app, "Wake trace", "saved with RX");

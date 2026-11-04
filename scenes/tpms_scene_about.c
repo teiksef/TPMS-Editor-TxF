@@ -26,10 +26,10 @@ void tpms_scene_about_on_enter(void* context) {
     furi_string_printf(text, "\e#Information\n");
     furi_string_cat_printf(text, "Version: %s\n", TPMS_VERSION_APP);
     furi_string_cat_printf(text, "Have Fun\n");
-    furi_string_cat_printf(text, "Author: altruista86\n\n");
+    furi_string_cat_printf(text, "Author: altruista86, TxF\n\n");
     furi_string_cat_printf(text, "\e#Features\n");
-    furi_string_cat_printf(text, "RX: 18 protocols\n");
-    furi_string_cat_printf(text, "TX/editing: 18 formats\n");
+    furi_string_cat_printf(text, "RX: 19 protocols\n");
+    furi_string_cat_printf(text, "TX/editing: 19 formats\n");
     furi_string_cat_printf(text, "Modulations: AM270, AM650,\nFM238 and FM476\n\n");
     furi_string_cat_printf(text, "\e#Protocols\n");
     furi_string_cat_printf(text, "01 Renault\n");
@@ -50,6 +50,7 @@ void tpms_scene_about_on_enter(void* context) {
     furi_string_cat_printf(text, "16 VDO TG1C/Abarth TEST\n");
     furi_string_cat_printf(text, "17 Shenzhen Q85 TEST\n");
     furi_string_cat_printf(text, "18 Mercedes Sprinter TEST\n");
+    furi_string_cat_printf(text, "19 Nissan TEST\n");
 
     widget_add_text_scroll_element(app->widget, 0, 16, 128, 50, furi_string_get_cstr(text));
     /* Seven short OK presses open the hidden PIN screen. Empty label keeps

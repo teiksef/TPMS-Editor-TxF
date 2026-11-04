@@ -28,6 +28,7 @@ extern ProtoViewDecoder PMV107JRX18TPMSDecoder;
 extern ProtoViewDecoder TG1CRX18TPMSDecoder;
 extern ProtoViewDecoder Q85RX18TPMSDecoder;
 extern ProtoViewDecoder MercedesSprinterRX18TPMSDecoder;
+extern ProtoViewDecoder NissanTPMSDecoder;
 
 ProtoViewDecoder *Decoders[] = {
     &RenaultTPMSDecoder,
@@ -53,6 +54,9 @@ ProtoViewDecoder *Decoders[] = {
     &Q85RX18TPMSDecoder,
     &TG1CRX18TPMSDecoder,
     &MercedesSprinterRX18TPMSDecoder,
+
+    /* based on a Nissan (Leaf, Infiniti - PVM-C811 etc) rtl_433 decoder and information */
+    &NissanTPMSDecoder,
     NULL
 };
 
