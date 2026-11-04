@@ -26,6 +26,9 @@
 #define TPMS_RELEARN_RX_WAIT_10_MS 10000U
 #define TPMS_RELEARN_RX_WAIT_15_MS 15000U
 
+// Up to 128 decoded bits covers all currently registered protocols. For saving unknown data, at least 256 is needed
+#define TPMS_RAWBITS_BUF 128U
+
 #define TPMS_KEY_FILE_VERSION 1
 #define TPMS_KEY_FILE_TYPE "Flipper Tire Pressure Monitoring System Key File"
 

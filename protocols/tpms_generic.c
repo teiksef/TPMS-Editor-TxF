@@ -1,7 +1,6 @@
 #include "tpms_generic.h"
 #include <lib/toolbox/stream/stream.h>
 #include <lib/flipper_format/flipper_format_i.h>
-#include "../helpers/tpms_types.h"
 
 #define TAG "TPMSBlockGeneric"
 
@@ -243,7 +242,7 @@ SubGhzProtocolStatus
                        flipper_format, "RawPayload", instance->raw_payload, raw_size)) {
                     instance->raw_payload_size = (uint8_t)raw_size;
                     instance->raw_payload_bits =
-                        (uint8_t)(raw_bits > 128U ? 128U : raw_bits);
+                        (uint8_t)(raw_bits > TPMS_RAWBITS_BUF ? TPMS_RAWBITS_BUF : raw_bits);
                     instance->raw_payload_valid = true;
                 }
             }

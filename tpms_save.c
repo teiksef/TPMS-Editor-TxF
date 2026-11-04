@@ -645,7 +645,7 @@ bool tpms_profile_load(
                 if(flipper_format_rewind(format) &&
                    flipper_format_read_hex(format, "RawPayload", values->raw_payload, raw_size)) {
                     values->raw_payload_size = (uint8_t)raw_size;
-                    values->raw_payload_bits = (uint8_t)(raw_bits > 128U ? 128U : raw_bits);
+                    values->raw_payload_bits = (uint8_t)(raw_bits > TPMS_RAWBITS_BUF ? TPMS_RAWBITS_BUF : raw_bits);
                     values->raw_payload_valid = true;
                 }
             }

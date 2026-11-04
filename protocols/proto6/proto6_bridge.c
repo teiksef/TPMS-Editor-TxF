@@ -177,7 +177,7 @@ static void proto6_copy_result(Proto6Bridge* bridge, const ProtoViewMsgInfo* inf
         memcpy(generic->raw_payload, raw_payload->bytes, bytes);
         generic->raw_payload_size = (uint8_t)bytes;
         uint32_t bits = raw_payload_bits ? (uint32_t)raw_payload_bits->uvalue : bytes * 8U;
-        generic->raw_payload_bits = (uint8_t)(bits > 128U ? 128U : bits);
+        generic->raw_payload_bits = (uint8_t)(bits > TPMS_RAWBITS_BUF ? TPMS_RAWBITS_BUF : bits);
         generic->raw_payload_valid = bytes > 0U;
     }
 

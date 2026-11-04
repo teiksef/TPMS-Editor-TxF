@@ -10,6 +10,8 @@
 #include <lib/subghz/types.h>
 #include <locale/locale.h>
 
+#include "../helpers/tpms_types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,7 +35,7 @@ struct TPMSBlockGeneric {
 
     /* TPMS 2.3: decoded payload before line coding. Keeping it allows
      * RX -> edit -> TX to preserve protocol-specific/unknown bytes. */
-    uint8_t raw_payload[16];
+    uint8_t raw_payload[TPMS_RAWBITS_BUF/8];
     uint8_t raw_payload_size;
     uint8_t raw_payload_bits;
     bool raw_payload_valid;

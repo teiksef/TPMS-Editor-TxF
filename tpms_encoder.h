@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "helpers/tpms_edit_mask.h"
+#include "helpers/tpms_types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -84,8 +85,8 @@ typedef struct {
     uint8_t edit_mask;
 
     /* TPMS 2.3 lossless source payload. Up to 128 decoded bits covers all
-     * eighteen currently registered protocols. */
-    uint8_t raw_payload[16];
+     * currently registered protocols. For saving unknown data, at least 256 is needed */
+    uint8_t raw_payload[TPMS_RAWBITS_BUF/8];
     uint8_t raw_payload_size;
     uint8_t raw_payload_bits;
     bool raw_payload_valid;
