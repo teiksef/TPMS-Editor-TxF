@@ -306,6 +306,7 @@ void tpms_encoder_default_values(TpmsEncoderKind kind, TpmsEditValues* values) {
     case TpmsEncoderTG1C: values->flags = 0x0000U; break;
     case TpmsEncoderQ85: values->flags = 0x0000U; break;
     case TpmsEncoderMercedesSprinter: values->flags = 0x836B00U; break;
+    case TpmsEncoderNissan: values->flags = 0x05U; break;
     default: break;
     }
 }
@@ -355,7 +356,7 @@ float tpms_encoder_pressure_step_kpa(TpmsEncoderKind kind) {
     case TpmsEncoderTG1C: return 1.38f;
     case TpmsEncoderQ85: return 3.0f;
     case TpmsEncoderMercedesSprinter: return psi_to_kpa / 2.75f;
-    case TpmsEncoderNissan: return 0.75f;				// as in Renault...
+    case TpmsEncoderNissan: return 0.25f * psi_to_kpa;
     default: return 5.0f;
     }
 }

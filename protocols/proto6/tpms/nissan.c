@@ -115,32 +115,39 @@ static void build_message(RawSamplesBuffer* samples, ProtoViewFieldSet* fieldset
     ProtoViewField* pressure = proto6_field_find(fieldset, "Pressure psi");
     ProtoViewField* mode = proto6_field_find(fieldset, "Flags");
 
-    uint8_t pressure_raw = 0;
-    if(pressure && pressure->fvalue) pressure_raw = (uint8_t) (pressure->fvalue + 3.0f)*4.0f;
+    if(tpms_build_should_patch(fieldset, have_raw, TPMS_EDIT_FLAGS) && mode && mode->uvalue) {
+        uint8_t mode_raw = mode->uvalue;
 
-    uint8_t mode_raw = 0;
-    if(mode && mode->uvalue) mode_raw = mode->uvalue;
-
-    // due to data not being aligned to byte boundaries, we do all or nothing
-    if(tpms_build_should_patch(fieldset, have_raw, TPMS_EDIT_ALL) && id) {
-
-      FURI_LOG_E(TAG, "Nissan should_patch ok");
-
-      // data is zeroed before
-      data[0] |= (uint8_t)(mode_raw << 5); 	// mode
-      data[0] |= (uint8_t)(id->bytes[1] >> 3);	// ID is 24bit only, so we start at [1]
-      data[1] |= (uint8_t)(id->bytes[1] << 5);
-      data[1] |= (uint8_t)(id->bytes[2] >> 3);
-      data[2] |= (uint8_t)(id->bytes[2] << 5);
-      data[2] |= (uint8_t)(id->bytes[3] >> 3);
-      data[3] |= (uint8_t)(id->bytes[3] << 5);
-      data[3] |= (uint8_t)(pressure_raw >> 3);
-      data[4] |= (uint8_t)(pressure_raw >> 5);
-
-      uint8_t fix = tpms_nissan_checksum(data);		// 0x0 if checksum is ok, 0x01, 0x02 or 0x03 if not
-      if (fix != 0) data[4] |= (uint8_t)(fix << 3);	// use the padding area to fix the checksum if needed
-
+        data[0] &= 0x1FU;			// clear three highest bits
+        data[0] |= (uint8_t)(mode_raw << 5);	// set mode
     }
+
+    if(tpms_build_should_patch(fieldset, have_raw, TPMS_EDIT_ID) && id && id->bytes) {
+        data[0] &= 0xE0U;			// clear five lowest bits
+        data[1] = 0;
+        data[2] = 0;
+        data[3] &= 0x1FU;			// clear three highest
+
+        data[0] |= (uint8_t)(id->bytes[0] >> 3);  // ID starts here
+        data[1] |= (uint8_t)(id->bytes[0] << 5);
+        data[1] |= (uint8_t)(id->bytes[1] >> 3);
+        data[2] |= (uint8_t)(id->bytes[1] << 5);
+        data[2] |= (uint8_t)(id->bytes[2] >> 3);
+        data[3] |= (uint8_t)(id->bytes[2] << 5);
+    }
+
+    if(tpms_build_should_patch(fieldset, have_raw, TPMS_EDIT_PRESSURE) && pressure && pressure->fvalue) {
+        uint8_t pressure_raw = (uint8_t)((pressure->fvalue + 3.0f)*4.0f);
+
+        data[3] &= 0xE0U;			// clear five lowest
+        data[4] = 0;
+
+        data[3] |= (uint8_t)(pressure_raw >> 3);
+        data[4] |= (uint8_t)(pressure_raw << 5);
+    }
+
+    uint8_t fix = tpms_nissan_checksum(data);		// 0x0 if checksum is ok, 0x01, 0x02 or 0x03 if not
+    if (fix != 0) data[4] |= (uint8_t)(fix << 3);	// use the padding area to fix the checksum if needed
 
     // write only required bits
     tpms_add_manchester_bits(samples, data, sizeof(data), NISSAN_DATA_BITS, te);
