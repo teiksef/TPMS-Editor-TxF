@@ -180,6 +180,8 @@ TPMSApp* tpms_app_alloc() {
     app->receiver_modulation_auto_index = 0U;
     app->receiver_modulation_auto_next_tick = 0U;
     app->autosave_enabled = tpms_autosave_load_enabled();
+    app->debugunknown_enabled = tpms_debugunknown_load_enabled();
+    tpms_cfg_set_debugunknown(app->debugunknown_enabled);		// global flags...
     tpms_autosave_reset_session(app);
     app->simulation_prefill_valid = false;
     memset(&app->simulation_prefill_values, 0, sizeof(app->simulation_prefill_values));

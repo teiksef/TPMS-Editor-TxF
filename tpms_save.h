@@ -16,6 +16,9 @@ typedef struct TPMSApp TPMSApp;
 #define TPMS_AUTOSAVE_CONFIG EXT_PATH("apps_data/tpms_editor/autosave.cfg")
 #define TPMS_AUTOSAVE_DEFAULT_ENABLED true
 
+#define TPMS_DEBUGUNKNOWN_CONFIG EXT_PATH("apps_data/tpms_editor/debugunk.cfg")
+#define TPMS_DEBUGUNKNOWN_DEFAULT_ENABLED false
+
 /** Save the exact signed RAW timings retained for a received history item. */
 bool tpms_save_original_raw(
     TPMSApp* app,
@@ -92,3 +95,13 @@ bool tpms_autosave_process_decoder(
     float frame_rssi,
     uint8_t wake_profile,
     bool wake_profile_valid);
+
+/* TPMSE 4.5.3 Debug Unknown */
+bool tpms_debugunknown_load_enabled(void);
+bool tpms_debugunknown_set_enabled(TPMSApp* app, bool enabled);
+// likely not a most proper way to do it
+typedef struct {
+    bool debugunknown_enabled;
+} GlobalFlags;
+bool tpms_cfg_is_debugunknown_enabled(void);
+void tpms_cfg_set_debugunknown(bool enabled);

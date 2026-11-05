@@ -5,23 +5,26 @@
 #include <furi_hal_random.h>
 #include "../proto6_core.h"
 #include "tpms_build.h"
+#include "../../../tpms_save.h"
 
 static bool decode(uint8_t *bits, uint32_t numbytes, uint32_t numbits, ProtoViewMsgInfo *info) {
 
-    if (numbits < 20 || numbits > 1024) return false;	// don't react on very long streams
+    if(!tpms_cfg_is_debugunknown_enabled()) return false;	// only if this feature is enabled
+
+    if (numbits < 20 || numbits > 1024) return false;	// do not react on very long streams
     FURI_LOG_E(TAG, "Unknown data, got %lu bits, %lu bytes from C1101", numbits, numbytes);
 
     info->start_off = 0;
 
-    // show original bit length info and limit if needed
+    // Keep original bit length info in kpa, pulses count are capped anyway. Then limit if needed
+    float kpa = (float)numbits;
     info->pulses_count = numbits;
     if(numbits > TPMS_RAWBITS_BUF) numbits = TPMS_RAWBITS_BUF;
 
     uint32_t id = furi_hal_random_get();
-    float psi = 32.0f;
     uint8_t realbytes = (numbits+7U)/8U; // rounding up to bytes
     fieldset_add_bytes(info->fieldset,"Tire ID",(const uint8_t *)&id,4*2);
-    fieldset_add_float(info->fieldset,"Pressure psi",psi,2);
+    fieldset_add_float(info->fieldset,"Pressure kpa",kpa,2);
     fieldset_add_bytes(info->fieldset, "Raw payload", (const uint8_t *)bits, (uint32_t)(realbytes * 2U));
 //    fieldset_add_bytes(info->fieldset, "Raw payload", (const uint8_t *)bits, 64U*2U);
     fieldset_add_uint(info->fieldset, "Raw payload bits", numbits, 8U);

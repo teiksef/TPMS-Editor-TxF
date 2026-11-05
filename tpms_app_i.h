@@ -119,6 +119,9 @@ struct TPMSApp {
     uint32_t autosave_cache_keys[32];
     uint32_t autosave_cache_hashes[32];
 
+    /* tpmse 4.5.3: saving unknown data catched */
+    bool debugunknown_enabled;
+
     /* One-shot simulator prefill selected from LAB session/saved library. */
     bool simulation_prefill_valid;
     TpmsEditValues simulation_prefill_values;

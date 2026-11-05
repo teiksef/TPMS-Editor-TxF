@@ -1166,3 +1166,72 @@ bool tpms_autosave_process_decoder(
     if(serialized) flipper_format_free(serialized);
     return saved;
 }
+
+/* ---- TPMS 4.5.3 unknown data handling ---- */
+
+#define TPMS_DEBUGUNKNOWN_CONFIG_TYPE "TPMS DebugUnknown Config"
+#define TPMS_DEBUGUNKNOWN_CONFIG_VERSION 1U
+
+bool tpms_debugunknown_load_enabled(void) {
+    Storage* storage = furi_record_open(RECORD_STORAGE);
+    if(!storage) return TPMS_DEBUGUNKNOWN_DEFAULT_ENABLED;
+
+    FlipperFormat* format = flipper_format_file_alloc(storage);
+    FuriString* type = furi_string_alloc();
+    uint32_t version = 0U;
+    uint32_t enabled = 0U;
+    /* It has an option to be automatically enabled. The setting is persistent anyway */
+    bool result = TPMS_DEBUGUNKNOWN_DEFAULT_ENABLED;
+
+    if(format && type &&
+       flipper_format_file_open_existing(format, TPMS_DEBUGUNKNOWN_CONFIG)) {
+        if(flipper_format_read_header(format, type, &version) &&
+           strcmp(furi_string_get_cstr(type), TPMS_DEBUGUNKNOWN_CONFIG_TYPE) == 0 &&
+           version == TPMS_DEBUGUNKNOWN_CONFIG_VERSION &&
+           flipper_format_read_uint32(format, "Enabled", &enabled, 1U)) {
+            result = enabled != 0U;
+        }
+        flipper_format_file_close(format);
+    }
+
+    if(type) furi_string_free(type);
+    if(format) flipper_format_free(format);
+    furi_record_close(RECORD_STORAGE);
+    return result;
+}
+
+static GlobalFlags global_flags;
+bool tpms_cfg_is_debugunknown_enabled(void) {
+    return global_flags.debugunknown_enabled;
+}
+
+void tpms_cfg_set_debugunknown(bool enabled) {
+    global_flags.debugunknown_enabled = enabled;
+}
+
+bool tpms_debugunknown_set_enabled(TPMSApp* app, bool enabled) {
+    if(!app) return false;
+
+    Storage* storage = furi_record_open(RECORD_STORAGE);
+    if(!storage) return false;
+    storage_common_mkdir(storage, EXT_PATH("apps_data"));
+    storage_common_mkdir(storage, EXT_PATH("apps_data/tpms_editor"));
+
+    FlipperFormat* format = flipper_format_file_alloc(storage);
+    bool ok = false;
+    if(format && flipper_format_file_open_always(format, TPMS_DEBUGUNKNOWN_CONFIG)) {
+        uint32_t value = enabled ? 1U : 0U;
+        ok = flipper_format_write_header_cstr(
+            format, TPMS_DEBUGUNKNOWN_CONFIG_TYPE, TPMS_DEBUGUNKNOWN_CONFIG_VERSION);
+        if(ok) ok = flipper_format_write_uint32(format, "Enabled", &value, 1U);
+        flipper_format_file_close(format);
+    }
+    if(format) flipper_format_free(format);
+    furi_record_close(RECORD_STORAGE);
+
+    if(ok) {
+        app->debugunknown_enabled = enabled;
+        global_flags.debugunknown_enabled = enabled;
+    }
+    return ok;
+}

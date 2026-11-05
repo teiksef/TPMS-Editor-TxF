@@ -12,6 +12,7 @@ enum TPMSSettingIndex {
     TPMSSettingIndexModulation,
     TPMSSettingIndexRadio,
     TPMSSettingIndexAutosave,
+    TPMSSettingIndexDebugUnknown,
     TPMSSettingIndexLock,
     TPMSSettingIndexRelearn,
 };
@@ -27,6 +28,13 @@ static const char* const autosave_text[] = {
     "OFF",
     "ON",
 };
+
+static const char* const debugunknown_text[] = {
+    "OFF",
+    "ON",
+};
+
+
 
 static uint8_t tpms_config_frequency_index(const TPMSApp* app, uint32_t frequency) {
     for(uint8_t i = 0U; i < subghz_setting_get_frequency_count(app->setting); i++) {
@@ -121,6 +129,23 @@ static void tpms_config_set_autosave(VariableItem* item) {
     }
 }
 
+static void tpms_config_set_debugunknown(VariableItem* item) {
+    TPMSApp* app = variable_item_get_context(item);
+    const bool enabled = variable_item_get_current_value_index(item) != 0U;
+
+    if(tpms_debugunknown_set_enabled(app, enabled)) {
+        variable_item_set_current_value_text(item, enabled ? "ON" : "OFF");
+        notification_message(app->notifications, &sequence_blink_green_10);
+    } else {
+        /* Keep the displayed value consistent with the last setting that was
+           successfully saved. A red blink means the SD write failed. */
+        const uint8_t previous_index = app->debugunknown_enabled ? 1U : 0U;
+        variable_item_set_current_value_index(item, previous_index);
+        variable_item_set_current_value_text(item, debugunknown_text[previous_index]);
+        notification_message(app->notifications, &sequence_blink_red_10);
+    }
+}
+
 static void tpms_config_build_list(TPMSApp* app);
 
 static void tpms_config_enter_callback(void* context, uint32_t index) {
@@ -183,6 +208,17 @@ static void tpms_config_build_list(TPMSApp* app) {
     const uint8_t autosave_index = app->autosave_enabled ? 1U : 0U;
     variable_item_set_current_value_index(item, autosave_index);
     variable_item_set_current_value_text(item, autosave_text[autosave_index]);
+
+    /* TPMSE 4.5.3 new option of showing unknown data, useful mainly with autosave */
+    item = variable_item_list_add(
+        app->variable_item_list,
+        "Debug Unknown",
+        COUNT_OF(debugunknown_text),
+        tpms_config_set_debugunknown,
+        app);
+    const uint8_t debugunknown_index = app->debugunknown_enabled ? 1U : 0U;
+    variable_item_set_current_value_index(item, debugunknown_index);
+    variable_item_set_current_value_text(item, debugunknown_text[debugunknown_index]);
 
     item = variable_item_list_add(app->variable_item_list, "Key lock", 1U, NULL, app);
     variable_item_set_current_value_text(item, app->lock == TPMSLockOn ? "ON" : "OFF");

@@ -11,5 +11,5 @@ App(
     fap_category="Sub-GHz",
     fap_icon_assets="images",
     fap_version="4.5.3",
-    fap_description="TPMS 4.5.3beta2"
+    fap_description="TPMS 4.5.3beta5"
 )
