@@ -3,7 +3,7 @@
 #include <furi.h>
 #include <furi_hal.h>
 
-#define TPMS_VERSION_APP "4.5.2"
+#define TPMS_VERSION_APP "4.5.3beta2"
 #define TPMS_DEVELOPED "ProtoView core + altruista86 UI + TxF bits"
 #define TPMS_GITHUB "https://github.com/teiksef/TPMS-Editor-TxF"
 
@@ -27,7 +27,7 @@
 #define TPMS_RELEARN_RX_WAIT_15_MS 15000U
 
 // Up to 128 decoded bits covers all currently registered protocols. For saving unknown data, at least 256 is needed
-#define TPMS_RAWBITS_BUF 128U
+#define TPMS_RAWBITS_BUF 256U
 
 #define TPMS_KEY_FILE_VERSION 1
 #define TPMS_KEY_FILE_TYPE "Flipper Tire Pressure Monitoring System Key File"

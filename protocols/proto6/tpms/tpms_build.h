@@ -2,10 +2,24 @@
 
 #include "../proto6_core.h"
 #include "../../../helpers/tpms_edit_mask.h"
+#include "../../../helpers/tpms_types.h"
 
 static inline void tpms_add_pattern(RawSamplesBuffer* samples, const char* pattern, uint32_t te) {
     for(const char* p = pattern; *p; p++) {
         raw_samples_add_or_update(samples, *p == '1', te);
+    }
+}
+
+static inline void tpms_add_data(
+    RawSamplesBuffer* samples,
+    const uint8_t* data,
+    uint8_t datasize,
+    uint32_t te) {
+    for(uint8_t i = 0; i < datasize; i++) {
+        for(uint8_t bit = 0; bit < 8; bit++) {
+            bool value = (data[i] & (uint8_t)(0x80U >> bit)) != 0;
+            raw_samples_add_or_update(samples, value, te);
+        }
     }
 }
 
